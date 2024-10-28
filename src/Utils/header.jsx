@@ -1,105 +1,82 @@
 import { useState } from "react"; 
 import { useNavigate } from "react-router-dom"; 
-import { ArrowUpCircleIcon, ChartPieIcon, HomeIcon, UserIcon } from "@heroicons/react/16/solid";
+import { ChartPieIcon, HomeIcon, UserIcon } from "@heroicons/react/16/solid";
 import LoadingSpinner from "./loader"; // Ensure correct import path
+import Swal from "sweetalert2"; // Import SweetAlert2
 
-export default function Headers() {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [hoveredIcon, setHoveredIcon] = useState(null);
+export default function SidebarHeader() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    setIsExpanded(true);
-  };
-
   const handleHomeClick = () => {
-    navigate("/landing");
-  };
-
-  const dasboardClick = () => {
-    navigate("/dashboard");
-  };
-
-  const logoutClick = () => {
     setLoading(true); 
     setTimeout(() => {
       setLoading(false); 
-      navigate("/login");
+      navigate("/landing");
+    }, 2000);
+  };
+
+  const dashboardClick = () => {
+    setLoading(true); 
+    setTimeout(() => {
+      setLoading(false); 
+      navigate("/dashboard");
     }, 2000); 
   };
 
+  const logoutClick = () => {
+    // Show confirmation dialog using SweetAlert2
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, log me out!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setLoading(true); 
+        setTimeout(() => {
+          setLoading(false); 
+          navigate("/login");
+        }, 2000); 
+      }
+    });
+  };
+
   return (
-    <div className="bg-slate-100">
+    <div className="fixed top-0 left-0 h-full w-16 bg-gray-800 shadow-lg flex flex-col justify-between">
       {loading ? (
-          <LoadingSpinner />
-        ) : (
-      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-1/7 p-8 flex flex-col items-center">
-        
-          <>
-            {isExpanded ? (
-              <div className="flex space-x-4">
-                <div 
-                  className="relative flex items-center" 
-                  onMouseEnter={() => setHoveredIcon("home")} 
-                  onMouseLeave={() => setHoveredIcon(null)} 
-                  onClick={handleHomeClick} // Add onClick to HomeIcon wrapper
-                >
-                  <HomeIcon className="h-8 w-8 text-blue-500 transition-transform duration-200 hover:scale-125 cursor-pointer" />
-                  {hoveredIcon === "home" && ( // Show tooltip when hovering over HomeIcon
-                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap bg-gray-700 text-white text-sm p-1 rounded opacity-100 transition-opacity duration-300">
-                      Home
-                    </span>
-                  )}
-                </div>
-                <div 
-                  className="relative flex items-center" 
-                  onMouseEnter={() => setHoveredIcon("chart")} 
-                  onMouseLeave={() => setHoveredIcon(null)} 
-                  onClick={dasboardClick} // Add onClick to ChartPieIcon wrapper
-                >
-                  <ChartPieIcon className="h-8 w-8 text-blue-500 transition-transform duration-200 hover:scale-125 cursor-pointer" />
-                  {hoveredIcon === "chart" && ( // Show tooltip when hovering over ChartPieIcon
-                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap bg-gray-700 text-white text-sm p-1 rounded opacity-100 transition-opacity duration-300">
-                      Dashboard
-                    </span>
-                  )}
-                </div>
-                <div 
-                  className="relative flex items-center" 
-                  onMouseEnter={() => setHoveredIcon("user")} 
-                  onMouseLeave={() => setHoveredIcon(null)} 
-                  onClick={logoutClick} // Add onClick to UserIcon wrapper
-                >
-                  <UserIcon className="h-8 w-8 text-blue-500 transition-transform duration-200 hover:scale-125 cursor-pointer" />
-                  {hoveredIcon === "user" && (  // Show tooltip when hovering over UserIcon
-                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap bg-gray-700 text-white text-sm p-1 rounded opacity-100 transition-opacity duration-300">
-                      Logout
-                    </span>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div 
-                className="relative flex items-center" 
-                onMouseEnter={() => setHoveredIcon("arrow")} 
-                onMouseLeave={() => setHoveredIcon(null)} 
-              >
-                <ArrowUpCircleIcon
-                  className="h-8 w-8 text-blue-500 mt-auto transition-transform duration-200 hover:scale-125 cursor-pointer"
-                  onClick={handleClick}
-                />
-                {hoveredIcon === "arrow" && (  // Show tooltip when hovering over ArrowUpCircleIcon
-                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap bg-gray-700 text-white text-sm p-1 rounded opacity-100 transition-opacity duration-300">
-                    Open Menu
-                  </span>
-                )}
-              </div>
-            )}
-          </>
-        
-      </div>
+        <LoadingSpinner />
+      ) : (
+        <div className="flex flex-col items-center py-4">
+          <div className="relative flex items-center mb-8 cursor-pointer" onClick={handleHomeClick}>
+            <HomeIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
+            <span className="absolute left-16 bg-gray-700 text-white text-sm p-1 rounded opacity-0 transition-opacity duration-300 hover:opacity-100">
+              Home
+            </span>
+          </div>
+          <div className="relative flex items-center mb-8 cursor-pointer" onClick={dashboardClick}>
+            <ChartPieIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
+            <span className="absolute left-16 bg-gray-700 text-white text-sm p-1 rounded opacity-0 transition-opacity duration-300 hover:opacity-100">
+              Dashboard
+            </span>
+          </div>
+        </div>
       )}
+      <div className="relative flex flex-col items-center mb-4">
+        <div className="cursor-pointer mb-2" onClick={logoutClick}> 
+          <UserIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
+          <span className="absolute left-10 bg-gray-700 text-white text-sm p-1 rounded opacity-0 transition-opacity duration-300 hover:opacity-100">
+            Logout
+          </span>
+        </div>
+        <div className="flex items-center justify-center text-xl">
+          logo
+        </div>
+      </div>
     </div>
   );
 }
