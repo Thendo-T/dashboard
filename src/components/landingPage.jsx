@@ -15,7 +15,6 @@ export default function Landing() {
   };
   return (
     <div className="flex">
-      <Headers />
       {loading ? (
         <LoadingSpinner />
       ) : (
