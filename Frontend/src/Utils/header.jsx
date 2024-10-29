@@ -40,7 +40,7 @@ export default function SidebarHeader() {
         setLoading(true);
         setTimeout(() => {
           setLoading(false);
-          navigate("/login");
+          navigate("/");
         }, 200);
       }
     });

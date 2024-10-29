@@ -8,10 +8,10 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Headers />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/header" element={<Headers />} />
         <Route path="/landing" element={<Landing />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
