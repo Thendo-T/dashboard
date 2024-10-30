@@ -10,28 +10,43 @@ export default function Login() {
   const [name, setName] = useState(""); 
   const [password, setPassword] = useState(""); 
   const [loading, setLoading] = useState(false); 
+  const [passwordError, setPasswordError] = useState(""); // Track password errors
 
   const navigate = useNavigate();
 
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#?!@$%^&*-]).{8,}$/;
+    return passwordRegex.test(password);
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true); 
   
+    // Check if password meets criteria
+    if (!validatePassword(password)) {
+      setPasswordError("Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
+      setLoading(false);
+      return;
+    } else {
+      setPasswordError(""); // Clear error if validation passes
+    }
+
     try {
-      const endpoint = isLogin ? "/auth/login" : "/auth/register"; // Determine API endpoint
+      const endpoint = isLogin ? "/auth/login" : "/auth/register";
       const response = await axios.post(`http://localhost:5000${endpoint}`, {
         email,
-        name: isLogin ? undefined : name, // Include name only if not logging in
+        name: isLogin ? undefined : name,
         password,
       });
   
-      console.log(response.data.message); // Log success message
+      console.log(response.data.message);
       setLoading(false);
   
       if (isLogin) {
-        navigate("/landing"); // Redirect to Landing page on successful login
+        navigate("/landing");
       } else {
-        // Show success popup for registration
         Swal.fire({
           title: "Registration Successful!",
           text: "You can now log in.",
@@ -39,7 +54,6 @@ export default function Login() {
           confirmButtonText: "OK",
         }).then(() => {
           setIsLogin(true);
-          // Reset form fields after successful registration
           setEmail("");
           setPassword("");
           setName(""); 
@@ -52,7 +66,7 @@ export default function Login() {
         icon: "error",
         confirmButtonText: "OK",
       });
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -63,11 +77,11 @@ export default function Login() {
           {isLogin ? "Login" : "Register"}
         </h2>
 
-        {loading ? ( // Show loader if loading is true
+        {loading ? (
           <LoadingSpinner />
         ) : (
           <form onSubmit={handleSubmit}>
-            {!isLogin && ( // Show the Full Name field only during registration
+            {!isLogin && (
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2" htmlFor="name">
                   Full Name
@@ -77,8 +91,8 @@ export default function Login() {
                   id="name"
                   placeholder="John Doe"
                   className="w-full p-2 border border-gray-300 rounded"
-                  value={name} // Bind name state
-                  onChange={(e) => setName(e.target.value)} // Update name state
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                 />
               </div>
@@ -92,8 +106,8 @@ export default function Login() {
                 id="email"
                 placeholder="John@Doe.com"
                 className="w-full p-2 border border-gray-300 rounded"
-                value={email} // Bind email state
-                onChange={(e) => setEmail(e.target.value)} // Update email state
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
               />
@@ -106,17 +120,18 @@ export default function Login() {
                 type="password"
                 id="password"
                 className="w-full p-2 border border-gray-300 rounded"
-                value={password} // Bind password state
-                onChange={(e) => setPassword(e.target.value)} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={8} 
-                autoComplete="current-password" 
+                minLength={8}
+                autoComplete="current-password"
               />
+              {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
             <button
               type="submit"
               className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition duration-200"
-              disabled={loading} 
+              disabled={loading}
             >
               {isLogin ? "Login" : "Register"}
             </button>
@@ -128,7 +143,7 @@ export default function Login() {
           <button
             className="text-blue-500 ml-1"
             onClick={() => {
-              setIsLogin(!isLogin); // Toggle between login and register
+              setIsLogin(!isLogin);
               setEmail("");
               setPassword(""); 
               if (isLogin) setName("");

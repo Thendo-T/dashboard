@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChartPieIcon, HomeIcon, UserIcon } from "@heroicons/react/16/solid";
+import {
+  ChartPieIcon,
+  HomeIcon,
+  UserIcon,
+  CogIcon,
+} from "@heroicons/react/16/solid"; // Import CogIcon
 import LoadingSpinner from "./loader"; // Ensure correct import path
 import Swal from "sweetalert2"; // Import SweetAlert2
+import axios from "axios";
 
 export default function SidebarHeader() {
   const [loading, setLoading] = useState(false);
@@ -24,7 +30,15 @@ export default function SidebarHeader() {
     }, 200);
   };
 
-  const logoutClick = () => {
+  const settingsClick = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/settings"); // Change this to the actual route for settings
+    }, 200);
+  };
+
+  const logoutClick = async () => {
     // Show confirmation dialog using SweetAlert2
     Swal.fire({
       title: "Are you sure?",
@@ -35,13 +49,13 @@ export default function SidebarHeader() {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, log me out!",
       cancelButtonText: "Cancel",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         setLoading(true);
-        setTimeout(() => {
-          setLoading(false);
-          navigate("/");
-        }, 200);
+        // Update the database to set isLoggedIn to false
+        await axios.post("http://localhost:5000/auth/logout"); // Create this endpoint
+        setLoading(false);
+        navigate("/");
       }
     });
   };
@@ -57,29 +71,29 @@ export default function SidebarHeader() {
             onClick={handleHomeClick}
           >
             <HomeIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
-            <span className="absolute left-16 bg-gray-700 text-white text-sm p-1 rounded opacity-0 transition-opacity duration-300 hover:opacity-100">
-              Home
-            </span>
           </div>
           <div
             className="relative flex items-center mb-8 cursor-pointer"
             onClick={dashboardClick}
           >
             <ChartPieIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
-            <span className="absolute left-16 bg-gray-700 text-white text-sm p-1 rounded opacity-0 transition-opacity duration-300 hover:opacity-100">
-              Dashboard
-            </span>
           </div>
+          {/* New Cog Icon Menu Item */}
         </div>
       )}
       <div className="relative flex flex-col items-center mb-4">
         <div className="cursor-pointer mb-2" onClick={logoutClick}>
           <UserIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
-          <span className="absolute left-10 bg-gray-700 text-white text-sm p-1 rounded opacity-0 transition-opacity duration-300 hover:opacity-100">
-            Logout
-          </span>
         </div>
-        <div className="flex items-center justify-center text-xl">logo</div>
+        <div
+          className="relative flex flex-col items-center mb-4 cursor-pointer mb-2"
+          onClick={settingsClick}
+        >
+          <CogIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
+        </div>
+        <div className="flex items-center cursor-pointer mb-2 justify-center text-xl">
+          logo
+        </div>
       </div>
     </div>
   );
