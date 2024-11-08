@@ -39,7 +39,6 @@ export default function SidebarHeader() {
   };
 
   const logoutClick = async () => {
-    // Show confirmation dialog using SweetAlert2
     Swal.fire({
       title: "Are you sure?",
       text: "You will be logged out!",
@@ -52,13 +51,27 @@ export default function SidebarHeader() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         setLoading(true);
-        // Update the database to set isLoggedIn to false
-        await axios.post("http://localhost:5000/auth/logout"); // Create this endpoint
-        setLoading(false);
-        navigate("/");
+        try {
+          // Retrieve token from local storage and include it in the headers
+          //const token = localStorage.getItem("token");
+  
+        //  await axios.post("http://localhost:5000/auth/logout", {}, {
+         //   headers: {
+         //     Authorization: `Bearer ${token}`, // Use token in headers
+        //    }
+        //  });
+  
+          // Clear the token and other relevant user data after logout
+          localStorage.removeItem("token");
+          setLoading(false);
+          navigate("/");
+        } catch (error) {
+          console.error("Logout failed:", error);
+        }
       }
     });
   };
+  
 
   return (
     <div className="fixed top-0 left-0 h-full w-16 bg-gray-800 shadow-lg flex flex-col justify-between">
@@ -78,19 +91,21 @@ export default function SidebarHeader() {
           >
             <ChartPieIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
           </div>
-          {/* New Cog Icon Menu Item */}
+
         </div>
       )}
       <div className="relative flex flex-col items-center mb-4">
         <div className="cursor-pointer mb-2" onClick={logoutClick}>
           <UserIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
         </div>
+        {/* This is for the update page */}
+        {/* 
         <div
           className="relative flex flex-col items-center mb-4 cursor-pointer mb-2"
           onClick={settingsClick}
         >
           <CogIcon className="h-8 w-8 text-white transition-transform duration-200 hover:scale-110" />
-        </div>
+        </div>*/}
         <div className="flex items-center cursor-pointer mb-2 justify-center text-xl">
           logo
         </div>

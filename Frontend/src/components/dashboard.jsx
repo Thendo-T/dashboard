@@ -32,87 +32,54 @@ ChartJS.register(
 export default function Dashboard() {
   const [activeUsers, setActiveUsers] = useState(0);
   const [newUsers, setNewUsers] = useState(0);
-  const [totalUsers, setTotalUsers] = useState(0); // State for total users
-  const [userName, setUserName] = useState("User"); // Default to "User"
+  const [totalUsers, setTotalUsers] = useState(0); 
+  const [userName, setUserName] = useState("User");
 
   useEffect(() => {
     const fetchActiveUsers = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/auth/active-users"
-        );
-        console.log("Active Users Response:", response.data);
+        const response = await axios.get("http://localhost:5000/auth/active-users");
         setActiveUsers(response.data.activeUsers);
       } catch (error) {
-        console.error(
-          "Error fetching active users:",
-          error.response ? error.response.data : error.message
-        );
+        console.error("Error fetching active users:", error.message);
       }
     };
 
     const fetchNewUsers = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/auth/new-signups"
-        );
-        console.log("New Users Response:", response.data);
+        const response = await axios.get("http://localhost:5000/auth/new-signups");
         setNewUsers(response.data.newUsers);
       } catch (error) {
-        console.error(
-          "Error fetching new users:",
-          error.response ? error.response.data : error.message
-        );
+        console.error("Error fetching new users:", error.message);
       }
     };
 
     const fetchTotalUsers = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/auth/total-users"
-        );
-        console.log("Total Users Response:", response.data);
+        const response = await axios.get("http://localhost:5000/auth/total-users");
         setTotalUsers(response.data.totalUsers);
       } catch (error) {
-        console.error(
-          "Error fetching total users:",
-          error.response ? error.response.data : error.message
-        );
+        console.error("Error fetching total users:", error.message);
       }
     };
 
     const fetchUserName = async () => {
-      const userId = 1; // Replace with actual user ID, if available in your context
       try {
-        const response = await axios.post(
-          "http://localhost:5000/auth/logged-in-user-name",
-          { id: userId }
-        );
-        console.log("User Name Response:", response.data);
+        const response = await axios.get("http://localhost:5000/auth/logged-in-user-name", {
+          params: { id: 33 } // Assuming a user ID is available, replace with the actual logged-in user ID
+        });
         setUserName(response.data.name);
       } catch (error) {
-        console.error(
-          "Error fetching user name:",
-          error.response ? error.response.data : error.message
-        );
+        console.error("Error fetching user name:", error.message);
       }
     };
+    
 
     fetchActiveUsers();
     fetchNewUsers();
     fetchTotalUsers();
-    fetchUserName(); // Fetch the user name
-
-    const interval = setInterval(() => {
-      fetchActiveUsers();
-      fetchNewUsers();
-      fetchTotalUsers();
-      fetchUserName(); // Fetch the user name periodically if necessary
-    }, 60000);
-
-    return () => clearInterval(interval);
+    fetchUserName();
   }, []);
-
   const lineData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
     datasets: [
@@ -124,10 +91,8 @@ export default function Dashboard() {
       },
     ],
   };
-
-  console.log("Rendering Dashboard...");
   return (
-    <div className="flex bg-blue-200 min-h-screen">
+    <div className="flex bg-white min-h-screen">
       <Headers />
       <div className="ml-16 p-6 w-full" style={{ width: "calc(100% - 4rem)" }}>
         <h2 className="text-3xl font-bold mb-4">Good Day, {userName}</h2>
@@ -164,7 +129,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="p-4 rounded-md shadow-sm mt-16 bg-white">
+        <div className="p-4 rounded-md shadow-sm mt-16 bg-slate-100">
           <h3 className="text-lg font-semibold mb-2">Monthly Revenue Trend</h3>
           <Line
             data={lineData}

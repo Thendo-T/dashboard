@@ -7,16 +7,18 @@ const {
   getNewUsersLastWeek,
   getTotalUsers,
   getLoggedInUserName,
+  authenticateToken
 } = require("./authController");
 
 const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.post("/logout", logoutUser);
+router.post('/logout', authenticateToken, logoutUser);
 router.get("/active-users", getActiveUsers);
 router.get("/new-signups", getNewUsersLastWeek);
 router.get("/total-users", getTotalUsers);
-router.post("/logged-in-user-name", getLoggedInUserName);
+router.get("/logged-in-user-name", getLoggedInUserName);
+
 
 module.exports = router;

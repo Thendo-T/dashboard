@@ -24,15 +24,14 @@ export default function Login() {
     e.preventDefault();
     setLoading(true); 
   
-    // Check if password meets criteria
     if (!validatePassword(password)) {
       setPasswordError("Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
       setLoading(false);
       return;
     } else {
-      setPasswordError(""); // Clear error if validation passes
+      setPasswordError("");
     }
-
+  
     try {
       const endpoint = isLogin ? "/auth/login" : "/auth/register";
       const response = await axios.post(`http://localhost:5000${endpoint}`, {
@@ -45,6 +44,10 @@ export default function Login() {
       setLoading(false);
   
       if (isLogin) {
+        // Store JWT in localStorage
+        localStorage.setItem("token", response.data.token);
+  
+        // Navigate to the landing page or protected route
         navigate("/landing");
       } else {
         Swal.fire({
@@ -69,6 +72,7 @@ export default function Login() {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-slate-500 via-slate-600 to-slate-700 flex items-center justify-center">
